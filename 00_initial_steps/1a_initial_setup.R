@@ -41,7 +41,6 @@ reg_train <- read.csv(here("data/train.csv")) |>
       factor
     )
   ) |> 
-  select(-bathrooms_text) |> 
   # replace low frequency neighborhoods
   replace_low_freq_neighborhoods() |> 
   # encode property type

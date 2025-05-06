@@ -1,13 +1,12 @@
 # Regression AirBnB Problem ----
 # Tuning for boosted tree model(s) ----
-
 # Load package(s) ----
 library(tidyverse)
 library(tidymodels)
 library(tictoc)
 library(here)
-library(devtools)
-devtools::install_github("catboost/catboost", subdir = "catboost/R-package")
+library(doParallel)
+library(bonsai)
 
 # Handle conflicts
 tidymodels_prefer()
@@ -25,36 +24,37 @@ load(here("data_split/reg_folds.rda"))
 load(here("02_recipes/1a_recipe_basic.rda"))
 
 # model specifications ----
-bt_spec <- 
-  boost_tree(
-    trees = tune(),                
-    min_n = tune(),              
+bt_spec <-
+  parsnip::boost_tree(
+    trees = tune(),
+    min_n = tune(),
+    tree_depth = tune(),
     learn_rate = tune()
-  ) |> 
-  set_engine("catboost") |> 
+  ) |>
+  set_engine("lightgbm") |>
   set_mode("regression")
 
 # update hyperparameters ----
-bt_params <- extract_parameter_set_dials(bt_spec) |> 
+bt_params <- extract_parameter_set_dials(bt_spec) |>
   update(
     trees = trees(range = c(100, 1000)),
     min_n = min_n(range = c(5, 40)),
-    learn_rate = learn_rate(range = c(-4, -0.5))
+    tree_depth = tree_depth(range = c(3, 10)),
+    learn_rate = learn_rate(range = c(0.001, 0.3))
   )
 
 # set grid ----
-bt_grid <- grid_random(bt_params,  size = 20)
+bt_grid <- grid_random(bt_params, size = 20)
 
 # define workflow ----
-bt_wflow <- 
-  workflow() |> 
-  add_model(bt_spec) |> 
+bt_wflow <-
+  workflow() |>
+  add_model(bt_spec) |>
   add_recipe(recipe_basic)
 
 # tune/fit workflow/model ----
 tic.clearlog() # clear log
 tic("bt_spec") # start clock
-
 bt_tune <-
   tune_grid(
     bt_wflow,
@@ -63,12 +63,9 @@ bt_tune <-
     control = control_grid(save_workflow = TRUE),
     metrics = metric_set(mae)
   )
+toc(log = TRUE) # extract runtime info
 
-toc(log = TRUE)
-
-# extract runtime info
 time_log <- tic.log(format = FALSE)
-
 bt_tictoc <- tibble(
   model = time_log[[1]]$msg,
   start_time = time_log[[1]]$tic,
@@ -78,9 +75,11 @@ bt_tictoc <- tibble(
 
 # write out results (fitted/trained workflows & runtime info) ----
 save(
-  bt_basic_tune,
-  bt_basic_tictoc,
+  bt_tune,
+  bt_tictoc,
   file = here("results/1a_bt_tune.rda")
 )
 
-best_params <- select_best(bt_basic_tune, metric = "mae")
+# get best parameters
+best_params <- select_best(bt_tune, metric = "mae")
+print(best_params)
