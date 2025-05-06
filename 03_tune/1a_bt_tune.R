@@ -1,5 +1,6 @@
 # Regression AirBnB Problem ----
 # Tuning for boosted tree model(s) ----
+
 # Load package(s) ----
 library(tidyverse)
 library(tidymodels)
@@ -21,7 +22,7 @@ num_cores <- parallel::detectCores(logical = TRUE)
 load(here("data_split/reg_folds.rda"))
 
 # load preprocessing/recipe ----
-load(here("02_recipes/1a_recipe_basic.rda"))
+load(here("02_recipes/recipes_files/1a_recipe.rda"))
 
 # model specifications ----
 bt_spec <-

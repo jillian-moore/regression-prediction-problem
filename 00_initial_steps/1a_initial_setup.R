@@ -19,14 +19,16 @@ reg_test <- read.csv(here("data/test.csv"))
 char_to_factor_list <- reg_train |>
   select(where(is.character)) |>
   select(-description, -host_about, -amenities, -host_response_rate, 
-         -host_acceptance_rate, -bathrooms_text, -host_neighbourhood, -neighbourhood_cleansed) |>
+         -host_acceptance_rate, -bathrooms_text, -host_neighbourhood, 
+         -neighbourhood_cleansed, -host_since, -first_review, 
+         -last_review, -price) |>
   names()
 
 # pre-processing steps that don't fit well in a recipe
 reg_train <- read.csv(here("data/train.csv")) |> 
   mutate(
     # parse price
-    price = parse_number(price),
+    price = as.numeric(parse_number(price)),
     # remove percent sign
     host_response_rate = str_remove(host_response_rate, "%") |> as.numeric(), 
     host_acceptance_rate = str_remove(host_acceptance_rate, "%") |> as.numeric(),
@@ -34,7 +36,11 @@ reg_train <- read.csv(here("data/train.csv")) |>
     id = as.character(id), 
     # calculate bathroom numbers
     bathrooms_text = str_replace(bathrooms_text, "[H|h]alf_bath", "0.5"),
-    num_bathrooms = str_remove_all(bathrooms_text, "[A-z]") |> as.numeric(),
+    bathrooms_text = str_remove_all(bathrooms_text, "[A-z]") |> as.numeric(),
+    # make datetime object
+    host_since = as.Date(ymd(host_since)),
+    first_review = as.Date(ymd(first_review)),
+    last_review = as.Date(ymd(last_review)),
     # make some char vars factors
     across(
       any_of(char_to_factor_list),
