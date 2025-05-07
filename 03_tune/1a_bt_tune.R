@@ -17,6 +17,7 @@ set.seed(333)
 
 # parallel processing ----
 num_cores <- parallel::detectCores(logical = TRUE)
+registerDoParallel(cores = num_cores)
 
 # load resamples ----
 load(here("data_split/reg_folds.rda"))
