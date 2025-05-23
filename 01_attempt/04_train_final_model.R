@@ -1,0 +1,60 @@
+# Regression AirBnB Problem ----
+# Analysis of tuned and trained models (comparisons)
+# Select final model
+# Fit & analyze final model
+
+# load packages ----
+library(tidyverse)
+library(tidymodels)
+library(here)
+library(bonsai)
+library(doMC)
+
+# handle common conflicts
+tidymodels_prefer()
+
+# parallel processing ----
+num_cores <- parallel::detectCores(logical = FALSE) 
+registerDoMC(cores = num_cores - 1)
+
+# set seed
+set.seed(333)
+
+# load data ----
+load(here("data_split/reg_test.rda"))
+load(here("data_split/reg_train.rda"))
+
+# load necessary objects ----
+load(here("results/1a_bt_tune.rda"))
+
+# collect metrics ----
+bt_tune |> 
+  collect_metrics() |> 
+  filter(.metric == "mae") |> 
+  arrange(mean)
+
+bt_tune |> 
+  autoplot(metric = "mae")
+
+# best params ---- 
+best_params <- select_best(bt_tune, metric = "mae")
+
+# finalize workflow ----
+bt_wflow <- extract_workflow(bt_tune)
+final_bt <- finalize_workflow(
+  bt_wflow,
+  best_params
+)
+
+# finalize fit and predictions ----
+final_fit <- fit(final_bt, reg_train)
+predictions <- predict(final_fit, reg_test)
+
+# make table ----
+bt_submit <- tibble(
+  id = reg_test$id,
+  predicted = predictions$.pred
+)
+
+# save out ----
+write_csv(bt_submit, here('06_submissions/1a_bt_submission.csv'))
