@@ -35,3 +35,5 @@
 # specify pathway to dataset data/project_dataset.csv
 # if all datasets are too large then use data/*.csv (only ignores CSVs)
 # if you have other file types then use appropriate extension data/*.rds
+04_atttempt/results/4a_bt_tune.rda
+06_atttempt/results/6a_lin_reg_fit.rda
