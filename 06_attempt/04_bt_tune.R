@@ -8,6 +8,7 @@ library(tictoc)
 library(here)
 library(bonsai)
 library(future)
+library(stacks)
 
 # Handle conflicts
 tidymodels_prefer()
@@ -66,7 +67,7 @@ bt_tune <- tune_bayes(
   iter = 20,
   param_info = bt_params,
   metrics = metric_set(mae),
-  control = control_bayes(save_workflow = TRUE, verbose = TRUE, no_improve = 15)
+  control = control_stack_bayes(save_workflow = TRUE, verbose = TRUE, no_improve = 15)
 )
 
 toc(log = TRUE)
