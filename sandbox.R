@@ -4,6 +4,9 @@
 library(tidyverse)
 library(here)
 
+# notes for future
+# look into random forest for ensemble, on own
+
 # load data
 reg_train <- read_csv(here("data/train.csv"))
 

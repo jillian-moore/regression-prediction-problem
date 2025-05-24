@@ -160,8 +160,6 @@ reg_train <- read.csv(here("data/train.csv")) |>
   ) |> 
   select(-first_review, -last_review, -host_since)
 
-# look into random forest for ensemble, on own
-
 # testing data
 reg_test <- read.csv(here("data/test.csv")) |> 
   select(

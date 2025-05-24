@@ -13,12 +13,14 @@ tidymodels_prefer()
 # Load candidate model info ----
 load(here("06_attempt/results/6a_lin_reg_fit.rda"))
 load(here("06_attempt/results/6a_bt_tune.rda"))
+load(here("06_attempt/results/6a_rf_tune.rda"))
 
 # create data stack ----
 reg_data_stacks <- 
   stacks() |> 
   add_candidates(lin_reg_fit) |> 
-  add_candidates(bt_tune)
+  add_candidates(bt_tune) |> 
+  add_candidates(rf_tune)
 
 # fit the stack ----
 # penalty values for blending (set penalty argument when blending)
@@ -29,6 +31,8 @@ set.seed(9874) # needed bc tuning process happening in background
 reg_stack_blend <- 
   reg_data_stacks |> 
   blend_predictions(penalty = blend_penalty)
+
+reg_stack_blend |> collect_parameters() # check with this
 
 # save blended model stack
 save(reg_stack_blend, file = here("results/reg_stack_blend.rda"))

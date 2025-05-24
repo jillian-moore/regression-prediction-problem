@@ -47,7 +47,7 @@ vars_to_remove <- setdiff(all_vars, important_vars)
 
 # drop the unimportant ones
 recipe_improved_filtered <- recipe_improved |>
-  step_rm(any_of(vars_to_remove))
+  step_rm(any_of(!!vars_to_remove))
 
 # check recipe
 recipe_improved_filtered |> 
