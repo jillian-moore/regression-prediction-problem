@@ -67,7 +67,12 @@ bt_tune <- tune_bayes(
   iter = 20,
   param_info = bt_params,
   metrics = metric_set(mae),
-  control = control_stack_bayes(save_workflow = TRUE, verbose = TRUE, no_improve = 15)
+  control = tune::control_bayes(
+    save_pred = TRUE, 
+    save_workflow = TRUE,
+    no_improve = 15,
+    verbose_iter = TRUE
+  )
 )
 
 toc(log = TRUE)
