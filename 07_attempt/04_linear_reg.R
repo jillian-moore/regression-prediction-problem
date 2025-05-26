@@ -13,7 +13,7 @@ tidymodels_prefer()
 load(here("data_split/reg_folds.rda"))
 
 # load preprocessing/recipe ----
-load(here("06_attempt/recipes/6a_recipe.rda"))
+load(here("07_attempt/recipes/7a_recipe.rda"))
 
 # model specification ----
 lin_reg_spec <-
@@ -25,7 +25,7 @@ lin_reg_spec <-
 lin_reg_wflow <-
   workflow() |>
   add_model(lin_reg_spec) |>
-  add_recipe(recipe_improved_filtered)
+  add_recipe(recipe_filtered)
 
 # tuning/fitting ----
 lin_reg_fit <-
@@ -38,4 +38,4 @@ lin_reg_fit <-
   )
 
 # save out
-save(lin_reg_fit, file = here("06_attempt/results/6a_lin_reg_fit.rda"))
+save(lin_reg_fit, file = here("07_attempt/results/7a_lin_reg_fit.rda"))
