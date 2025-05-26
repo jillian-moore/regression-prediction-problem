@@ -5,6 +5,7 @@
 library(tidymodels)
 library(tidyverse)
 library(here)
+library(bonsai)
 library(stacks)
 
 # Handle common conflicts
@@ -19,8 +20,8 @@ load(here("06_attempt/results/6a_rf_tune.rda"))
 reg_data_stacks <- 
   stacks() |> 
   add_candidates(lin_reg_fit) |> 
-  add_candidates(bt_tune) |> 
-  add_candidates(rf_tune)
+  add_candidates(rf_tune) |> 
+  add_candidates(bt_tune)
 
 # fit the stack ----
 # penalty values for blending (set penalty argument when blending)
@@ -30,12 +31,10 @@ blend_penalty <- c(10^(-6:-1), 0.5, 1, 1.5, 2)
 set.seed(9874) # needed bc tuning process happening in background
 reg_stack_blend <- 
   reg_data_stacks |> 
-  blend_predictions(penalty = blend_penalty)
-
-reg_stack_blend |> collect_parameters() # check with this
+  blend_predictions(penalty = blend_penalty, control = control_stack_grid())
 
 # save blended model stack
-save(reg_stack_blend, file = here("results/reg_stack_blend.rda"))
+save(reg_stack_blend, file = here("06_attempt/results/reg_stack_blend.rda"))
 
 # explore the blended model stack ----
 reg_stack_blend |> 
@@ -48,4 +47,4 @@ reg_stack_blend |>
 reg_ensemble <- fit_members(reg_stack_blend)
 
 # save trained ensemble model ----
-save(reg_ensemble, file = here("results/reg_ensemble.rda") )
+save(reg_ensemble, file = here("06_attempt/results/reg_ensemble.rda"))

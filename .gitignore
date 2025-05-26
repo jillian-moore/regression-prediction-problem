@@ -41,4 +41,7 @@
 06_attempt/results/6a_rf_tune.rda
 06_attempt/results/6b_bt_tune.rda
 06_attempt/results/6b_rf_tune.rda
+06_attempt/results/reg_stack_blend.rda
+06_attempt/results/var_select_fit_bt.rda
+06_attempt/results/reg_ensemble.rda
 data_split/

@@ -40,15 +40,26 @@ bt_spec <- boost_tree(
 # update hyperparameters ----
 bt_params <- extract_parameter_set_dials(bt_spec) |>
   update(
-    trees = trees(c(100, 1500)),
-    min_n = min_n(c(2, 40)),
-    learn_rate = learn_rate(c(0.005, 0.7)),
-    mtry = mtry(c(2, 50)), 
+    trees = trees(range = c(200, 1000)),
+    min_n = min_n(range = c(5, 40)),
+    learn_rate = learn_rate(range = c(0.01, 0.5)),  
+    mtry = mtry(range = c(5, 45)),
     tree_depth = tree_depth(range = c(3, 15))
   )
 
 # set grid ----
-bt_grid <- grid_space_filling(bt_params, size = 30)
+bt_grid_raw <- grid_space_filling(bt_params, size = 15)
+
+if(max(bt_grid_raw$learn_rate) > 0.3) {
+  cat("Grid space filling failed - correcting learn_rate manually...\n")
+  
+  bt_grid <- bt_grid_raw %>%
+    mutate(
+      learn_rate = scales::rescale(learn_rate, to = c(0.01, 0.5))
+    )
+} else {
+  bt_grid <- bt_grid_raw
+}
 
 # define workflow ----
 bt_wflow <-
@@ -60,20 +71,14 @@ bt_wflow <-
 tic.clearlog()
 tic("bt_spec_bayes")
 
-bt_tune <- tune_bayes(
-  bt_wflow,
-  resamples = reg_folds,
-  initial = 15,
-  iter = 20,
-  param_info = bt_params,
-  metrics = metric_set(mae),
-  control = tune::control_bayes(
-    save_pred = TRUE, 
-    save_workflow = TRUE,
-    no_improve = 15,
-    verbose_iter = TRUE
+ctrl_grid <- control_stack_grid()
+
+bt_tune <- bt_wflow |>
+  tune_grid(
+    resamples = reg_folds,
+    grid = bt_grid,
+    control = ctrl_grid
   )
-)
 
 toc(log = TRUE)
 

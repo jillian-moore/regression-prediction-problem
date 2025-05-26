@@ -32,7 +32,7 @@ recipe_improved <- recipe(price ~ ., data = reg_train) |>
   step_impute_mode(all_nominal_predictors()) |>
   step_YeoJohnson(all_numeric_predictors()) |> 
   step_string2factor(all_nominal_predictors()) |> 
-  step_other(all_nominal_predictors(), threshold = 0.005) |> 
+  step_other(all_nominal_predictors(), threshold = 0.02) |> 
   step_unknown(all_nominal_predictors()) |>             
   step_novel(all_nominal_predictors()) |> 
   step_dummy(all_nominal_predictors(), one_hot = TRUE) |> 
