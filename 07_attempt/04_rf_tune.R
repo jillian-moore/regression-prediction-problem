@@ -12,7 +12,7 @@ library(future)
 tidymodels_prefer()
 
 # set seed
-set.seed(8697)
+set.seed(86787)
 
 # parallel processing ----
 plan(multisession, workers = parallel::detectCores(logical = TRUE) - 1)

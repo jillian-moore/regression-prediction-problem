@@ -31,7 +31,7 @@ bt_spec <- boost_tree(
   learn_rate = tune(),
   mtry = tune(),
   tree_depth = tune()
-) |> 
+  ) |> 
   set_engine("lightgbm") |>
   set_mode("regression")
 

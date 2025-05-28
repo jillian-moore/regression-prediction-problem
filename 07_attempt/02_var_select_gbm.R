@@ -69,7 +69,7 @@ bt_params <- extract_parameter_set_dials(bt_spec) |>
     min_n = min_n(range = c(1, 30)),
     trees = trees(range = c(200, 1500)),
     tree_depth = tree_depth(range = c(3, 15)),
-    learn_rate = learn_rate(range = c(0.001, 0.4))
+    learn_rate = learn_rate(range = c(0.0001, 0.4))
   )
 
 # build tuning grid
@@ -93,4 +93,4 @@ optimal_wflow <- extract_workflow(bt_tuned) |>
 var_select_fit_bt <- fit(optimal_wflow, reg_train)
 
 # write out variable selection results ----
-save(var_select_fit_bt, file = here("06_attempt/results/var_select_fit_bt.rda"))
+save(var_select_fit_bt, file = here("07_attempt/results/7a_var_select_fit_bt.rda"))

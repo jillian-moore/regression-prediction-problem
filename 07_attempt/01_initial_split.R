@@ -282,7 +282,16 @@ reg_test <- read.csv(here("data/test.csv")) |>
 reg_folds <- reg_train |>
   vfold_cv(v = 5, repeats = 3, strata = price)
 
+# make mini dataset for checks ----
+mini_split <- initial_split(reg_train, prop = 0.05, strata = price)
+reg_mini <- training(mini_split)
+
+reg_folds_mini <- reg_mini |>
+  vfold_cv(v = 5, repeats = 3, strata = price)
+
 # save out ----
 save(reg_train, file = here("data_split/reg_train.rda"))
+save(reg_mini, file = here("data_split/reg_mini.rda"))
+save(reg_folds_mini, file = here("data_split/reg_folds_mini.rda"))
 save(reg_test, file = here("data_split/reg_test.rda"))
 save(reg_folds, file = here("data_split/reg_folds.rda"))

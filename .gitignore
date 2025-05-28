@@ -35,6 +35,7 @@
 # specify pathway to dataset data/project_dataset.csv
 # if all datasets are too large then use data/*.csv (only ignores CSVs)
 # if you have other file types then use appropriate extension data/*.rds
+data_split/
 04_attempt/results/4a_bt_tune.rda
 06_attempt/results/6a_lin_reg_fit.rda
 06_attempt/results/6a_bt_tune.rda
@@ -44,4 +45,13 @@
 06_attempt/results/reg_stack_blend.rda
 06_attempt/results/var_select_fit_bt.rda
 06_attempt/results/reg_ensemble.rda
-data_split/
+07_attempt/results/7a_en_tune.rda
+07_attempt/results/7a_bt_gbm_tune.rda
+07_attempt/results/7q_bt_xg_tune.rda
+07_attempt/results/7a_rf_tune.rda
+07_attempt/results/7a_reg_stack_blend.rda
+07_attempt/results/7a_var_select_fit_bt.rda
+07_attempt/results/7a_var_select_lasso_fit.rda
+07_attempt/results/7a_reg_ensemble.rda
+07_attempt/recipes/7a_recipe.rda
+

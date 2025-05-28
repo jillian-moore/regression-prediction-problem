@@ -68,13 +68,14 @@ lasso_tuned <- tune_grid(
 )
 
 # pull out non-zero coefficients ----
-best_lasso <- finalize_workflow(select_best(lasso_tuned, metric = "mae"))
+best_params <- select_best(lasso_tuned, metric = "mae")
+best_lasso <- finalize_workflow(lasso_wflow, best_params)
 
 # fit best model/results
 var_select_lasso_fit <- fit(best_lasso, data = reg_train)
 
 # tidy up
-nonzero_vars <- tidy(lasso_fit) |> filter(estimate != 0) |> pull(term)
+nonzero_vars <- tidy(var_select_lasso_fit) |> filter(estimate != 0) |> pull(term)
 
 # write out variable selection results ----
-save(var_select_lasso_fit, file = here("06_attempt/results/var_select_lasso_fit.rda"))
+save(var_select_lasso_fit, file = here("07_attempt/results/7a_var_select_lasso_fit.rda"))

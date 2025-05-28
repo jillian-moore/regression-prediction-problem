@@ -33,7 +33,7 @@ svm_spec <-
 svm_params <- hardhat::extract_parameter_set_dials(svm_spec)
 
 # define grid
-svm_grid <- grid_regular(svm_params, levels = 5)
+svm_grid <- grid_space_filling(svm_params, size = 20)
 
 # workflow ----
 svm_wflow <-
