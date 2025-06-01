@@ -14,11 +14,11 @@ tidymodels_prefer()
 # load testing data ----
 load(here("data_split/reg_test.rda"))
 load(here("data_split/reg_train.rda"))
-load(here("07_attempt/recipes/7a_recipe.rda"))
+load(here("10_attempt/recipes/10b_recipe.rda"))
 
 # load trained ensemble model info ----
-load(here("07_attempt/results/7a_reg_ensemble.rda"))
-load(here("07_attempt/results/7a_reg_stack_blend.rda"))
+load(here("10_attempt/results/10a_reg_ensemble.rda"))
+load(here("10_attempt/results/10a_reg_stack_blend.rda"))
 
 # get the column names the recipe expects ----
 required_cols <- recipe_filtered$var_info$variable[recipe_filtered$var_info$role %in% c("predictor", "outcome")]
@@ -48,4 +48,4 @@ ensemble_submit <- tibble(
 )
 
 # save out submission ----
-write_csv(ensemble_submit, here("07_attempt/results/7a_ensemble_submission.csv"))
+write_csv(ensemble_submit, here("10_attempt/results/10a_ensemble_submission.csv"))

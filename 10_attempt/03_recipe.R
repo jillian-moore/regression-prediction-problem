@@ -12,8 +12,8 @@ tidymodels_prefer()
 # load objects ----
 load(here("data_split/reg_train.rda"))
 load(here("data_split/reg_test.rda"))
-load(here("07_attempt/results/7a_var_select_fit_bt.rda"))
-load(here("07_attempt/results/7a_var_select_lasso_fit.rda"))
+load(here("10_attempt/results/10b_var_select_fit_bt.rda"))
+load(here("10_attempt/results/10b_var_select_lasso_fit.rda"))
 
 # get important variables from selection ----
 # look at vars
@@ -105,4 +105,4 @@ for (col in missing_cols) {
 test_baked <- bake(recipe_filtered_prep, new_data = reg_test)
 
 # save recipe ----
-save(recipe_filtered, file = here("07_attempt/recipes/7a_recipe.rda"))
+save(recipe_filtered, file = here("10_attempt/recipes/10b_recipe.rda"))

@@ -26,9 +26,9 @@ lasso_folds <- reg_train |>
 recipe_select <- recipe(price ~ ., data = reg_train) |>
   step_rm(id, amenities, amenities_clean, description, description_clean, 
           host_about, host_about_clean) |> 
+  step_nzv(all_predictors()) |> 
   step_impute_knn(all_numeric_predictors()) |>
   step_impute_mode(all_nominal_predictors()) |>
-  step_nzv(all_predictors()) |> 
   step_string2factor(all_nominal_predictors()) |> 
   step_other(all_nominal_predictors(), threshold = 0.01) |>  
   step_unknown(all_nominal_predictors()) |>             
@@ -49,7 +49,7 @@ lasso_spec <-
   linear_reg(
     penalty = tune(), 
     mixture = 1
-    ) |> 
+  ) |> 
   set_mode("regression") |> 
   set_engine("glmnet")
 
@@ -79,4 +79,3 @@ nonzero_vars <- tidy(var_select_lasso_fit) |> filter(estimate != 0) |> pull(term
 
 # write out variable selection results ----
 save(var_select_lasso_fit, file = here("07_attempt/results/7a_var_select_lasso_fit.rda"))
-

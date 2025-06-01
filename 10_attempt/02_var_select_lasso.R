@@ -49,7 +49,7 @@ lasso_spec <-
   linear_reg(
     penalty = tune(), 
     mixture = 1
-    ) |> 
+  ) |> 
   set_mode("regression") |> 
   set_engine("glmnet")
 
@@ -78,5 +78,5 @@ var_select_lasso_fit <- fit(best_lasso, data = reg_train)
 nonzero_vars <- tidy(var_select_lasso_fit) |> filter(estimate != 0) |> pull(term)
 
 # write out variable selection results ----
-save(var_select_lasso_fit, file = here("07_attempt/results/7a_var_select_lasso_fit.rda"))
+save(var_select_lasso_fit, file = here("10_attempt/results/10b_var_select_lasso_fit.rda"))
 

@@ -143,6 +143,17 @@ encode_property_type <- function(df) {
   return(df)
 }
 
+# parse host verification ----
+parse_verifications_to_factor <- function(vec) {
+
+  cleaned <- gsub("\\[|\\]|'", "", vec)
+  cleaned <- trimws(cleaned)
+  
+  sorted_combos <- sapply(strsplit(cleaned, ",\\s*"), function(x) paste(sort(x), collapse = ","))
+  
+  factor(sorted_combos)
+}
+
 # NLP ----
 # parse JSON amenities properly ----
 parse_json_amenities <- function(amenities_text) {
