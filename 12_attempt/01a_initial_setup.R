@@ -9,6 +9,9 @@ library(janitor)
 library(stringr)
 library(lubridate)
 
+# source helper functions
+source("helper_functions.R")
+
 # handle common conflicts
 tidymodels_prefer()
 
@@ -16,6 +19,9 @@ tidymodels_prefer()
 # training data
 reg_train <- read.csv(here("data/train.csv")) |>
   clean_names() |> 
+  # categorize neighborhoods
+  categorize_neighborhoods_by_affluence() |> 
+  categorize_neighborhoods_by_geography() |> 
   mutate(
     # make id a character object
     id = as.character(id),
@@ -45,6 +51,7 @@ reg_train <- read.csv(here("data/train.csv")) |>
     # checking amenities
     has_wifi = str_detect(amenities, regex("wifi", ignore_case = TRUE)),
     has_kitchen = str_detect(amenities, regex("kitchen", ignore_case = TRUE)),
+    has_pool = str_detect(amenities, regex("pool", ignore_case = TRUE)),
     amenity_count = if_else(is.na(amenities), 0L, str_count(amenities, ",") + 1),
     # missing info
     missing_response_rate = is.na(host_response_rate),
@@ -67,6 +74,9 @@ reg_train <-reg_train |>
 
 # testing data
 reg_test <- read.csv(here("data/test.csv")) |>
+  # categorize neighborhoods
+  categorize_neighborhoods_by_affluence() |> 
+  categorize_neighborhoods_by_geography() |> 
   mutate(
     # make id a character object
     id = as.character(id),
@@ -92,6 +102,7 @@ reg_test <- read.csv(here("data/test.csv")) |>
     # checking amenities
     has_wifi = str_detect(amenities, regex("wifi", ignore_case = TRUE)),
     has_kitchen = str_detect(amenities, regex("kitchen", ignore_case = TRUE)),
+    has_pool = str_detect(amenities, regex("pool", ignore_case = TRUE)),
     amenity_count = if_else(is.na(amenities), 0L, str_count(amenities, ",") + 1),
     # missing info
     missing_response_rate = is.na(host_response_rate),

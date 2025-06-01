@@ -50,4 +50,4 @@ prep(simple_recipe) |>
   select(contains("price")) |> 
   names()
 
-save(simple_recipe, file = here("11_attempt/recipes/11a_recipe.rda"))
+save(simple_recipe, file = here("12_attempt/recipes/12a_recipe.rda"))

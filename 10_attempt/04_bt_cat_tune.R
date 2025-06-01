@@ -295,7 +295,7 @@ catboost_tictoc <- tibble(
 
 # Show best results
 cat("Best CatBoost results:\n")
-show_best(catboost_tune, metric = "mae", n = 5)
+show_best(catboost_tune, metric = "mae", n = 5)\
 
 # Select best parameters
 best_catboost <- select_best(catboost_tune, metric = "mae")
