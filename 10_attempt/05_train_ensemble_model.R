@@ -53,3 +53,8 @@ reg_ensemble <- fit_members(reg_stack_blend)
 
 # save trained ensemble model ----
 save(reg_ensemble, file = here("10_attempt/results/10a_reg_ensemble.rda"))
+
+# for the executive summary
+best_gbm_params <- select_best(bt_gbm_tune, metric = "mae")
+best_xg_params <- select_best(bt_xg_tune, metric = "mae")
+best_svm_params <- select_best(svm_tune, metric = "mae")

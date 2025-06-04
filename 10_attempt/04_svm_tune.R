@@ -47,6 +47,7 @@ svm_tune <-
   tune_grid(
     resamples = reg_folds,
     grid = svm_grid,
+    metrics = metric_set(mae),
     control = stacks::control_stack_grid()
   )
 

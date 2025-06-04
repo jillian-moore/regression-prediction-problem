@@ -1,0 +1,293 @@
+---
+title: "Regression Airbnb Problem Executive Summary"
+subtitle: "Predicting the Price of Airbnbs Across 3 Listing Locations"
+author: "Jillian Moore"
+pagetitle: "Jillian Moore Executive Summary"
+date: today
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    embed-resources: true
+    code-fold: false
+    link-external-newwindow: true
+    
+execute:
+  warning: false
+  
+from: markdown+emoji
+reference-location: margin
+citation-location: margin
+---
+
+::: {.callout-tip icon="false"}
+## Github Repo Link
+
+[Jillian Moore's Repo (jillian-moore)](https://github.com/stat301-3-2025-spring/reg-pred-prob-jillian-moore.git)
+:::
+
+```{r}
+#| label: load-stuff
+#| echo: false
+
+library(tidyverse)
+library(here)
+library(tidymodels)
+
+load(here("10_attempt/results/10a_bt_gbm_tune.rda"))
+load(here("10_attempt/results/10b_bt_xg_tune.rda"))
+load(here("10_attempt/results/10b_svm_tune.rda"))
+load(here("10_attempt/results/10a_reg_stack_blend.rda"))
+
+tune_summary = read_csv(here("14_attempt/results/14a_bt_tuning_summary.csv"))
+```
+
+## Introduction
+
+This executive summary covers my chosen attempts for the regression prediction problem.
+
+The general progress of my attempts follows me adding additional pre-processing, incorporating variable selection methods, working with ensemble models, and finally going back to the basics but separating training by listing location.
+
+## Selected Model 1
+
+#### Attempt 14, or the 14a boosted tree submission file
+
+This is my best performing model with a public MAE score of 94.83. I had made a major breakthrough in attempt 13 by splitting the pre-processing by listing location (Asheville, Chicago, and Kauai), so in attempt 14 I add unique variable selection for the three different training sets.
+
+This was motivated by my observations that variable selection in prior attempts kept variables likely only predictive of price in one location. For example, having a view of the city skyline is not a relevant amenity in Kauai where many of the homes are single story. I also use boosted tree with a LightGBM engine as this was my best performing model.
+
+#### Pre-processing
+
+First, I completed pre-processing for the provided regression training dataset. My additions were largely informed by past attempts.
+
+1)  I use self-written functions to add the most frequent amenties, amentity count, and added variables related to the description and host about section with sentiment, word count, and character count.
+2)  I parse and log-transform price with base 10.
+3)  I remove the percent sign and impute NAs with the median for host acceptance and host response rates.
+4)  I parse and calculate number of bathrooms.
+5)  I reformat dates and add variables host tenure date and days since first review.
+6)  I add binary flags for having a description and host about.
+7)  I add binary flags if a listing is missing response rate, acceptance rate, number of bathrooms, review score, and reviews per month.
+8)  I remove all date variables and the original bathrooms, amenities, description, host about, and host since variables. I also remove the basic cleaned description and host about variables since I added calculated variables based on them
+
+I then filtered the regression training data into three datasets based on listing location, and saved them out to complete variable selection. I then went back and removed different variables in each listing location per my variable selection model results.
+
+```{r}
+#| label: tbl-tune-summary-1
+#| tbl-cap: Summarized results for attempt 14
+#| echo: false
+
+tune_summary |>
+  select(location, best_mae, best_mae_se, runtime_seconds, n_observations) |> 
+  rename(
+    `Listing Location` = location,
+    `Best MAE` = best_mae,
+    `Best MAE Std. Error` = best_mae_se,
+    `Runtime (seconds)` = runtime_seconds,
+    `Observations` = n_observations
+  ) |>
+  knitr::kable(digits = 3)
+```
+
+
+Per @tbl-tune-summary-1, Kauai had the best MAE and all data splits had very low standard errors and fast runtimes. The smaller training datasets and LightGBM engine could help explain this. 
+
+#### Variable selection
+
+As stated earlier, I used boosted tree (with LightGBM engine) variable selection on each portion of the regression data. I used the same recipe described in the Recipe section. I then went through the selected variables by hand and included removed variables near the bottom of the list, keeping only the 5-7 most important amenities for each listing location. Some of these were indeed highly unique to that location (such as free parking and skyline views in Chicago or beach supplies in Kauai).
+
+I then filtered and removed these directly from the initial setup. This is because I ran into a lot of problems removing variables within different recipes because of mismatches with the testing set and model failures.
+
+#### Recipe
+
+Per my positive experience with simpler recipes, I used the same recipe for all three training sets with only four steps.
+
+1)  I updated the role of ID.
+2)  I removed predictors with zero variance
+3)  I made logical variables into numeric.
+4)  I made nominal predictors into factors.
+
+I then checked to be sure the dimensions were correct.
+
+#### Hyperparameters
+
+```{r}
+#| label: tbl-tune-summary-2
+#| tbl-cap: Hyperparameters selected for attempt 14
+#| echo: false
+
+tune_summary |>
+  select(location, trees, min_n, mtry, learn_rate, tree_depth, loss_reduction) |> 
+  rename(
+    `Listing Location` = location,
+    `Trees` = trees,
+    `Minimum Data Points in Node` = min_n,
+    `Variables Sampled at Each Split` = mtry,
+    `Learn Rate` = learn_rate,
+    `Tree Depth` = tree_depth,
+    `Loss Reduction` = loss_reduction
+  ) |>
+  knitr::kable(digits = 3)
+```
+
+
+Per @tbl-tune-summary-2, the hyperparameters for Chicago and Kauai were the same while Asheville had lower numbers of trees and minimum data points in each node and a higher tree depth. This could mean Asheville had more complex patterns.
+
+#### Final submission notes
+
+This attempt incorporated my most important realizations: simple recipes are better, variable selection is important, and splitting the data by listing location will result in significantly better predictions.
+
+## Selected Model 2
+
+#### Attempt 10, or the 10a ensemble submission model
+
+This is a lower-performing model with a public MAE score of 103.82. Although I had other boosted tree models besides attempt 14 that performed better than this, I selected it because the ensemble approach can help prevent overfitting. As opposed to other ensembles, I only stack the most important models here: boosted tree with xgboost, boosted tree with LightGBM, and supper vector machine (SVM).
+
+#### Pre-processing
+
+First, I completed extensive and likely overly-complex pre-processing for the provided regression training dataset. My additions were largely informed by my exploratory data analysis and brainstorming.
+
+1)  I use self-written functions to add neighborhood affluence, neighborhood geography, encoded property types, the most frequent amenties, amentity count, description categories/keywords, and added variables related to the description and host about section with sentiment, word count, and character count.
+2)  I parse and log-transform price with base e. I also remove variables larger than 5 times the interquartile range.
+3)  I parse host acceptance and host response rates by removing the percent sign.
+4) I add binary flags for host verification and if host verifications are via phone.
+5)  I add a binary flag if the listing location is in Kauai.
+6)  I reformat dates and add variables host tenure date and days since first review.
+7)  I add binary flags for key amenities I hand-selected based on past runs. 
+8) I parse and calculate number of bathrooms.
+9) I handle date variables and add variables existing host since, active host since, days since last review, and host experience in years.
+10) I add binary flag missing value indicators for host acceptance rate, host reponse rate, review score, and bathrooms.
+11) I bin variables with skews from my EDA. 
+
+#### Variable selection
+
+I cross-referenced two forms of variable selection: boosted tree with LightGBM engine and lasso. This is because they place emphasis on different things and could be beneficial when checked against the other. Boosted trees are nonlinear, interaction-aware, and can handle complex relationships and missing values. They tend to highlight variables that to splits across many trees, even if those relationships are nonlinear. Lasso regression performs automatic variable selection by shrinking less useful coefficients to zero. It tends to favor variables with strong linear and additive effects and can be more conservative.
+
+I kept all variables that had a cumulative summary of 97% of total importance, but cut variables from that list that the lasso selection found had importance of 0 when penalized. 
+
+I then fixed the testing set to match the training set, which took a lot of troubleshooting as I was selecting post-recipe (i.e. with dummies) variables.
+
+#### Recipe
+
+I used a more complex recipe for this model.
+
+1)  I removed dense categorical variables like the original amenities, description, and host about columns, as well as the ID column.
+2)  I removed predictors with near zero variance
+3)  I imputed median and imputed mode to address NA values.
+4)  I made all nominal predictors into factors (just in case they weren't already). 
+5) I handled unseen factor levels, infrequent factor levels, and unknown factor levels.
+6) I used YeoJohnson to handle skew in numeric variables.
+7) I removed variables with zero variance if any new ones were created.
+8) I handled correlated predictors.
+9) I normalized all numeric predictors.
+
+I then filtered for the important variables I was keeping and dropped them from the complex recipe. I made sure the filtered recipe aligned the testing and training sets using prepping and baking.
+
+#### Hyperparameters
+
+I stacked three models in this ensemble: boosted tree with xgboost, boosted tree with LightGBM, and SVM.
+
+```{r}
+#| label: tbl-tune-summary-gbm
+#| tbl-cap: Best hyperparameters for boosted tree model with LightGBM engine
+#| echo: false
+
+select_best(bt_gbm_tune, metric = "mae") |> 
+  select(.config, trees, min_n, mtry, learn_rate, tree_depth, loss_reduction) |> 
+  rename(
+    `Configuration` = .config,
+    `Trees` = trees,
+    `Minimum Data Points in Node` = min_n,
+    `Variables Sampled at Each Split` = mtry,
+    `Learn Rate` = learn_rate,
+    `Tree Depth` = tree_depth,
+    `Loss Reduction` = loss_reduction
+  ) |>
+  knitr::kable(digits = 4)
+```
+
+```{r}
+#| label: tbl-tune-summary-xg
+#| tbl-cap: Best hyperparameters for boosted tree model with xgboost engine
+#| echo: false
+
+select_best(bt_xg_tune, metric = "mae") |> 
+  select(.config, trees, min_n, mtry, learn_rate, tree_depth, loss_reduction) |> 
+  rename(
+    `Configuration` = .config,
+    `Trees` = trees,
+    `Minimum Data Points in Node` = min_n,
+    `Variables Sampled at Each Split` = mtry,
+    `Learn Rate` = learn_rate,
+    `Tree Depth` = tree_depth,
+    `Loss Reduction` = loss_reduction
+  ) |>
+  knitr::kable(digits = 4)
+```
+
+```{r}
+#| label: tbl-tune-summary-svm
+#| tbl-cap: Best hyperparameters for SVM model with kernlab engine
+#| echo: false
+
+select_best(svm_tune, metric = "mae") |> 
+  select(.config, cost, rbf_sigma) |> 
+  rename(
+    `Configuration` = .config,
+    `Cost` = cost,
+    `RBF Sigma` = rbf_sigma
+  ) |> 
+  knitr::kable()
+```
+
+In later attempts, I expand the number of trees and the variables sampled at each split because the best performing model was at the boundary of my hyperparameter range in @tbl-tune-summary-gbm.
+
+#### Ensemble
+
+My ensemble found all three member models contributed (which we expected from past attempts) and that boosted tree with LightGBM had the best performer while boosted tree with xgboost appeared the most often in the top 10 most heavily weighted members (see @tbl-stack).
+
+```{r}
+#| label: tbl-stack
+#| tbl-cap: Weights of top 10 members in ensemble
+#| echo: false
+
+reg_stack_tbl <- tibble::tibble(
+  member = c(
+    "bt_gbm_tune_1_18", "bt_xg_tune_1_18", "bt_gbm_tune_1_12",
+    "bt_xg_tune_1_12", "bt_xg_tune_1_11", "bt_xg_tune_1_03",
+    "svm_tune_1_20", "bt_xg_tune_1_20", "bt_xg_tune_1_07",
+    "bt_gbm_tune_1_15"
+  ),
+  type = c(
+    "boost_tree", "boost_tree", "boost_tree", "boost_tree", "boost_tree",
+    "boost_tree", "svm_rbf", "boost_tree", "boost_tree", "boost_tree"
+  ),
+  weight = c(
+    0.169, 0.129, 0.127, 0.110, 0.0990, 0.0968,
+    0.0821, 0.0612, 0.0586, 0.0363
+  )
+)
+
+reg_stack_tbl |> 
+  knitr::kable()
+```
+
+#### Final submission notes
+
+While my boosted tree models may perform better, they are also more subject to overfitting. I am hoping that on the private leaderboard my ensemble models are performing better becayse they are more robust. Running multiple ensemble models was time consuming but it did give me a better understanding of how different models can contribute and work together for a lower MAE. 
+
+I actually *also* submitted a CSV file with predictions based off only the boosted tree with LightGBM model using attempt 10's preprocessing (see 10b submission). The ensemble performed better, indicating it is indeed better in some cases to have other models balance out boosted tree.
+
+## Conclusion
+
+In terms of the project, I learned the importance of evaluating datasets in splits rather than trying to create a universally-fitting recipe or pre-processing. I also learned that simple is often best when it comes to predictions.
+
+In terms of my data science understanding, I definitely learned the importance of organization and how to work through difficult Github issues. This took a large time commitment because I was just trying attempts rather than trying to think outside of the box and find new solutions. 
+
+## Comment on Generative AI Use
+
+I used generative AI (specifically Claude AI and ChatGPT) to assist me in developing some of the more complex functions in the helper functions R script, as well as for addressing small issues that arose during my workflow. The actual writing and most of the other scripts are my own.
+
+I credit any assistance from generative AI to the programmers of AI tools and the content created by programmers that AI tools are trained on.

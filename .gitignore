@@ -1,72 +1,48 @@
-# R session files
+# History files
 .Rhistory
 .Rapp.history
+
+# Session Data files
 .RData
 .RDataTmp
-.Ruserdata
-.Renviron
 
-# RStudio project files
+# User-specific files
+.Ruserdata
+
+# RStudio files
 .Rproj.user/
 *.Rproj
 
-# System files
-.DS_Store
-**/.DS_Store
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
 
-# R Markdown cache
+# knitr and R markdown default cache directories
 *_cache/
-*/cache/
+/cache/
+
+# Temporary files created by R markdown
 *.utf8.md
 *.knit.md
 
-# OAuth tokens
-.httr-oauth
+# R Environment Variables
+.Renviron
 
-# Ignore all model result and recipe files
-**/results/*.rda
-**/recipes/*.rda
+# mac related files
+*.DS_Store
+**/.DS_Store
 
-# Ignore large data-related files
-data_split/
-data/*.csv
-data/*.rda
-
-# Explicit large model files (if they slip through)
-07_attempt/results/7a_rf_tune.rda
-06_attempt/results/6b_rf_tune.rda
+# ignore files (likely datasets) if too large (> 100 MB)
+# specify pathway to dataset data/project_dataset.csv
+# if all datasets are too large then use data/*.csv (only ignores CSVs)
+# if you have other file types then use appropriate extension data/*.rds
+# find . -size +100M | sed 's|^\./||g' | cat >> .gitignore; awk '!NF || !seen[$0]++' .gitignore
 06_attempt/results/6b_bt_tune.rda
-06_attempt/results/6a_rf_tune.rda
 06_attempt/results/reg_ensemble.rda
-07_attempt/results/7a_reg_ensemble.rda
-10_attempt/results/10a_reg_ensemble.rda
-07_attempt/results/7a_reg_stack_blend.rda
+06_attempt/results/6a_rf_tune.rda
 06_attempt/results/reg_stack_blend.rda
-10_attempt/results/10a_reg_stack_blend.rda
-09_attempt/results/9a_model_comparison.rda
-10_attempt/results/10a_bt_gbm_tune.rda
-09_attempt/results/9a_bt_gbm_tune.rda
-06_attempt/results/6a_bt_tune.rda
-10_attempt/results/10b_svm_tune.rda
-10_attempt/results/10b_bt_xg_tune.rda
-07_attempt/results/7a_en_tune.rda
-07_attempt/results/7a_svm_tune.rda
-08_attempt/results/8a_svm_tune.rda
-08_attempt/results/8a_bt_gbm_tune.rda
-07_attempt/results/7a_bt_gbm_tune.rda
-07_attempt/results/7a_bt_xg_tune.rda
-03_attempt/results/3a_bt_tune.rda
-02_attempt/results/2a_bt_tune.rda
-01_attempt/results/1a_bt_tune.rda
-12_attempt/results/12b_bt_gbm_tune.rda
-12_attempt/results/12a_bt_gbm_tune.rda
-11_attempt/results/11a_bt_gbm_tune.rda
-10_attempt/results/10b_var_select_lasso_fit.rda
-10_attempt/results/10b_var_select_fit_bt.rda
-09_attempt/results/9a_var_select_fit_bt.rda
-07_attempt/results/7a_var_select_lasso_fit.rda
-07_attempt/results/7a_var_select_fit_bt.rda
-06_attempt/results/var_select_fit_bt.rda
-data/train.csv
-data/test.csv
-data_split/reg_folds.rda
+06_attempt/results/6b_rf_tune.rda
+07_attempt/results/7a_reg_ensemble.rda
+07_attempt/results/7a_rf_tune.rda
+07_attempt/results/7a_reg_stack_blend.rda
+10_attempt/results/10a_reg_ensemble.rda
+
