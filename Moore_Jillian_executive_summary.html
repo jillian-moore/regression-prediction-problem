@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Jillian Moore">
-<meta name="dcterms.date" content="2025-06-03">
+<meta name="dcterms.date" content="2025-06-04">
 
 <title>Jillian Moore Executive Summary</title>
 <style>
@@ -3101,7 +3101,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 3, 2025</p>
+      <p class="date">June 4, 2025</p>
     </div>
   </div>
   
@@ -3324,7 +3324,7 @@ Table 2: Hyperparameters selected for attempt 14
 <h4 class="anchored" data-anchor-id="variable-selection-1">Variable selection</h4>
 <p>I cross-referenced two forms of variable selection: boosted tree with LightGBM engine and lasso. This is because they place emphasis on different things and could be beneficial when checked against the other. Boosted trees are nonlinear, interaction-aware, and can handle complex relationships and missing values. They tend to highlight variables that to splits across many trees, even if those relationships are nonlinear. Lasso regression performs automatic variable selection by shrinking less useful coefficients to zero. It tends to favor variables with strong linear and additive effects and can be more conservative.</p>
 <p>I kept all variables that had a cumulative summary of 97% of total importance, but cut variables from that list that the lasso selection found had importance of 0 when penalized.</p>
-<p>I then fixed the testing set to match the training set, which took a lot of troubleshooting as we were selecting post-recipe (i.e. with dummies) variables.</p>
+<p>I then fixed the testing set to match the training set, which took a lot of troubleshooting as I was selecting post-recipe (i.e. with dummies) variables.</p>
 </section>
 <section id="recipe-1" class="level4">
 <h4 class="anchored" data-anchor-id="recipe-1">Recipe</h4>
@@ -3338,7 +3338,7 @@ Table 2: Hyperparameters selected for attempt 14
 <li>I used YeoJohnson to handle skew in numeric variables.</li>
 <li>I removed variables with zero variance if any new ones were created.</li>
 <li>I handled correlated predictors.</li>
-<li>I normalized all numeric peredictors.</li>
+<li>I normalized all numeric predictors.</li>
 </ol>
 <p>I then filtered for the important variables I was keeping and dropped them from the complex recipe. I made sure the filtered recipe aligned the testing and training sets using prepping and baking.</p>
 </section>
@@ -3466,11 +3466,11 @@ Table 5: Best hyperparameters for SVM model with kernlab engine
 </figure>
 </div>
 </div>
-<p>In later attempts, I expand the number of trees and the variables sampled at each split because the bes performing model was at the boundary of my hyperparameter range in <a href="#tbl-tune-summary-gbm" class="quarto-xref">Table 3</a>.</p>
+<p>In later attempts, I expand the number of trees and the variables sampled at each split because the best performing model was at the boundary of my hyperparameter range in <a href="#tbl-tune-summary-gbm" class="quarto-xref">Table 3</a>.</p>
 </section>
 <section id="ensemble" class="level4">
 <h4 class="anchored" data-anchor-id="ensemble">Ensemble</h4>
-<p>My ensemble found all three member models contributed (which we expected from past attempts) and that boosted tree with LightGBM had the best performer while boosted tree with xgboost appeared the most often in the top 10 heavily weighted members (see <a href="#tbl-stack" class="quarto-xref">Table 6</a>).</p>
+<p>My ensemble found all three member models contributed (which we expected from past attempts) and that boosted tree with LightGBM had the best performer while boosted tree with xgboost appeared the most often in the top 10 most heavily weighted members (see <a href="#tbl-stack" class="quarto-xref">Table 6</a>).</p>
 <div class="cell">
 <div id="tbl-stack" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
