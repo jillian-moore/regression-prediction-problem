@@ -41,10 +41,8 @@ I am aiming to predict Airbnb price. The data includes listing and host informat
 
 ## Considerations
 
-Please note that I ran into some issues with committing and pushing large objects. All R scripts are reproducible for any possible missing results or information.
+All R scripts are reproducible for any possible missing results or information.
 
-Additionally, there are more submissions on Kaggle than attempt folders on this repo. This is because for minor mistakes (e.g. forgetting to reverse the log-transformation of price before submitting), I did not create another attempt folder.
-
-I also did not create a separate attempt folder for hyperparameter adjustments or *minor* pre-processing adjustments. These differences are clearly labeled with letters (e.g. 1a and 1b).
+There are more submissions on Kaggle than attempt folders on this repo because for minor mistakes (e.g. forgetting to reverse the log-transformation of the target variable before submitting), I did not create another attempt folder. I also did not create a separate attempt folder for hyperparameter adjustments or *minor* pre-processing adjustments. These differences are labeled with letters (e.g. 1a and 1b).
 
 The attempt folders therefore correspond to each unique method and might have more than one submission. However, all valid submissions are entirely reproducible.
